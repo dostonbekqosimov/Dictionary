@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+            margin-bottom: 2rem;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .search-form {
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+        .word-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .pronunciation {
+            font-style: italic;
+            color: #6c757d;
+        }
+        .part-of-speech {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .example {
+            background-color: #f1f3f5;
+            border-left: 3px solid #007bff;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .alert-info {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">Dictionary App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbarNav" class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <form th:action="@{/dictionary/search}" method="get" class="search-form">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Search for a word" required>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <div class="word-info" th:if="${word}">
+        <h2 th:text="${word.englishWord}"></h2>
+        <p class="pronunciation" th:text="${word.pronunciation}"></p>
+        <audio th:if="${word.pronunciationUrl}" controls>
+            <source th:src="${word.pronunciationUrl}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <div th:if="${not #lists.isEmpty(word.meanings)}">
+            <h3 class="mt-4">Meanings:</h3>
+            <div th:each="meaning : ${word.meanings}">
+                <h4 class="part-of-speech" th:text="${meaning.partOfSpeech}"></h4>
+                <p th:text="${meaning.definition}"></p>
+                <div th:if="${not #lists.isEmpty(meaning.examples)}">
+                    <h5>Examples:</h5>
+                    <div class="example" th:each="example : ${meaning.examples}">
+                        <p th:text="${example.exampleSentence}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(word.synonyms)}">
+            <h3 class="mt-4">Synonyms:</h3>
+            <p th:text="${#strings.listJoin(word.synonyms, ', ')}"></p>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(word.antonyms)}">
+            <h3 class="mt-4">Antonyms:</h3>
+            <p th:text="${#strings.listJoin(word.antonyms, ', ')}"></p>
+        </div>
+
+        <div th:if="${word.uzbekWord}">
+            <h3 class="mt-4">Uzbek Translation:</h3>
+            <p th:text="${word.uzbekWord}"></p>
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-4" th:unless="${word}">
+        No word found. Please try another search.
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
