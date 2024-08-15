@@ -11,15 +11,56 @@
             background-color: #f8f9fa;
         }
         .navbar {
-            background-color: #007bff;
+            background-color: #4CAF50;
             margin-bottom: 2rem;
+            padding: 0.2rem 1rem;
+            height: 45px; /* Thinner navbar */
         }
         .navbar-brand, .nav-link {
             color: white !important;
         }
+        .menu-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 0;  /* Remove any margin on the left side */
+            padding-left: 0; /* Remove extra padding on the left */
+
+        }
+        .dropdown-menu {
+            background-color: #FFFFFF;
+            border: none;
+        }
+        .dropdown-item {
+            color: black !important;
+        }
+        .dropdown-item:hover {
+            background-color: #d4d4d4;
+        }
+        .menu-button::after {
+            display: none;
+        }
         .search-form {
-            max-width: 500px;
-            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+        }
+        .input-group {
+            max-width: 400px;
+        }
+        .search-form .form-control {
+            height: 30px;
+            border: none; /* No border */
+        }
+        .menu-button dropdown-toggle {
+        margin-left: 1px;
+
+        }
+        .form-control:focus {
+            outline: none;
+            box-shadow: none; /* No glow effect */
         }
         .word-info {
             background-color: white;
@@ -45,42 +86,54 @@
         .alert-info {
             margin-top: 2rem;
         }
+
+        /* Flexbox for placing More and Search side by side */
+        .navbar .container-fluid {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 0; /* No gap between More and Search */
+        }
+        .navbar navbar-expand-lg navbar-dark {
+        margin-left: 1px;
+        }
+
+        /* Remove search button, allow form submission via Enter */
+        .search-form input {
+            border-radius: 0;
+            padding-right: 10px;
+        }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Dictionary App</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div id="navbarNav" class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        More
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><a class="dropdown-item" href="#">Help</a></li>
-                    </ul>
-                </li>
+    <div class="container-fluid">
+        <!-- More dropdown next to search -->
+        <div class="dropdown">
+            <button class="menu-button dropdown-toggle" id="moreDropdown" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                ≡ Menu
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="moreDropdown">
+                <li><a class="dropdown-item" href="#">Home</a></li>
+                <li><a class="dropdown-item" href="#">About</a></li>
+                <li><a class="dropdown-item" href="#">Contact</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Help</a></li>
+                <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
             </ul>
         </div>
+
+        <!-- Search form on the left, right next to the More dropdown -->
+        <form th:action="@{/api/dictionary/search}" method="get" class="search-form">
+            <div class="input-group">
+                <input type="text" name="query" class="w3-bar-item w3-input w3-border" placeholder="Search for a word" required>
+            </div>
+        </form>
     </div>
 </nav>
 
 <div class="container">
-    <form th:action="@{/dictionary/search}" method="get" class="search-form">
-        <div class="input-group">
-            <input type="text" name="query" class="form-control" placeholder="Search for a word" required>
-            <button class="btn btn-primary" type="submit">Search</button>
-        </div>
-    </form>
-
     <div class="word-info" th:if="${word}">
         <h2 th:text="${word.englishWord}"></h2>
         <p class="pronunciation" th:text="${word.pronunciation}"></p>
@@ -94,6 +147,7 @@
             <div th:each="meaning : ${word.meanings}">
                 <h4 class="part-of-speech" th:text="${meaning.partOfSpeech}"></h4>
                 <p th:text="${meaning.definition}"></p>
+
                 <div th:if="${not #lists.isEmpty(meaning.examples)}">
                     <h5>Examples:</h5>
                     <div class="example" th:each="example : ${meaning.examples}">
@@ -111,11 +165,6 @@
         <div th:if="${not #lists.isEmpty(word.antonyms)}">
             <h3 class="mt-4">Antonyms:</h3>
             <p th:text="${#strings.listJoin(word.antonyms, ', ')}"></p>
-        </div>
-
-        <div th:if="${word.uzbekWord}">
-            <h3 class="mt-4">Uzbek Translation:</h3>
-            <p th:text="${word.uzbekWord}"></p>
         </div>
     </div>
 

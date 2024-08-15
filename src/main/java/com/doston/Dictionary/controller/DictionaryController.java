@@ -7,25 +7,38 @@ package com.doston.Dictionary.controller;
 import com.doston.Dictionary.dto.WordDTO;
 import com.doston.Dictionary.service.DictionaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 
 @Controller
-@RequestMapping("/dictionary")
+@RequestMapping("/api/dictionary")
 public class DictionaryController {
-
     @Autowired
     private DictionaryService dictionaryService;
 
     @GetMapping("/search")
     public String searchWord(@RequestParam(name = "query", required = false, defaultValue = "") String query, Model model) {
+
+        query = query.replaceAll("^\"|\"$", "");
         WordDTO wordDTO = dictionaryService.getWordDetails(query);
         model.addAttribute("word", wordDTO);
+        return "search";
+    }
+
+    @GetMapping("")
+    public String getHomePage() {
         return "home";
     }
+
+
 }
 
 
