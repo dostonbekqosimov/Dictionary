@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #4CAF50;
+            margin-bottom: 2rem;
+            padding: 0.2rem 1rem;
+            height: 45px; /* Thinner navbar */
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .menu-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 0;  /* Remove any margin on the left side */
+            padding-left: 0; /* Remove extra padding on the left */
+
+        }
+        .dropdown-menu {
+            background-color: #FFFFFF;
+            border: none;
+        }
+        .dropdown-item {
+            color: black !important;
+        }
+        .dropdown-item:hover {
+            background-color: #d4d4d4;
+        }
+        .menu-button::after {
+            display: none;
+        }
+        .search-form {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+        }
+        .input-group {
+            max-width: 400px;
+        }
+        .search-form .form-control {
+            height: 30px;
+            border: none; /* No border */
+        }
+        .menu-button dropdown-toggle {
+        margin-left: 1px;
+
+        }
+        .form-control:focus {
+            outline: none;
+            box-shadow: none; /* No glow effect */
+        }
+        .word-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .pronunciation {
+            font-style: italic;
+            color: #6c757d;
+        }
+        .part-of-speech {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .example {
+            background-color: #f1f3f5;
+            border-left: 3px solid #007bff;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .alert-info {
+            margin-top: 2rem;
+        }
+
+        /* Flexbox for placing More and Search side by side */
+        .navbar .container-fluid {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 0; /* No gap between More and Search */
+        }
+        .navbar navbar-expand-lg navbar-dark {
+        margin-left: 1px;
+        }
+
+        /* Remove search button, allow form submission via Enter */
+        .search-form input {
+            border-radius: 0;
+            padding-right: 10px;
+        }
+
+         main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .alphabet-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .alphabet-list a {
+            text-decoration: none;
+            color: #4CAF50;
+        }
+        .word-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .word-list a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <!-- More dropdown next to search -->
+        <div class="dropdown">
+            <button class="menu-button dropdown-toggle" id="moreDropdown" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                ≡ Menu
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="moreDropdown">
+                <li><a class="dropdown-item" href="#">Home</a></li>
+                <li><a class="dropdown-item" href="#">About</a></li>
+                <li><a class="dropdown-item" href="#">Contact</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Help</a></li>
+                <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Search form on the left, right next to the More dropdown -->
+        <form th:action="@{/api/dictionary/search}" method="get" class="search-form">
+            <div class="input-group">
+                <input type="text" name="query" class="w3-bar-item w3-input w3-border" placeholder="Search for a word" required>
+            </div>
+        </form>
+    </div>
+</nav>
+<main>
+    <h1>English-Uzbek Dictionary</h1>
+
+    <section class="alphabet-list">
+        <p>To view the list of words, select the letter they start with:</p>
+        <!--        <div>-->
+        <!--            <a th:each="letter : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.toCharArray()"-->
+        <!--               th:href="@{'/letter/' + ${letter}}"-->
+        <!--               th:text="${letter}"></a>-->
+        <!--        </div>-->
+    </section>
+
+    <section>
+        <h2>Most commonly used words</h2>
+        <!--        <div class="word-list">-->
+        <!--            <a th:each="word : ${commonWords}" th:href="@{'/word/' + ${word}}" th:text="${word}"></a>-->
+        <!--        </div>-->
+    </section>
+
+    <section>
+        <h2>Words without examples yet</h2>
+        <p>The following words don't have example phrases or sentences yet. You can help the project by adding them!</p>
+        <p>Go to the word's page and click the "Add example" button.</p>
+<!--        <div class="word-list">-->
+<!--            <a th:each="word : ${wordsWithoutExamples}" th:href="@{'/word/' + ${word}}" th:text="${word}"></a>-->
+<!--        </div>-->
+    </section>
+</main>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
